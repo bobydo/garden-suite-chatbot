@@ -4,7 +4,7 @@ from qdrant_client import QdrantClient
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
-from service.pdf_loader import PdfLoader
+from service.pdf_loader import LocalPdfLoader
 from service.website_loader import WebsiteLoader
 from service.log_helper import LogHelper
 from config import (
@@ -43,7 +43,7 @@ class RetrieverService:
 
         docs = []
         for pdf_path in pdf_files:
-            docs.extend(PdfLoader(pdf_path).load())
+            docs.extend(LocalPdfLoader(pdf_path).load())
 
         # delete old by 'source' for each pdf before writing new
         seen_sources = set(d.metadata.get("source") for d in docs if d is not None)

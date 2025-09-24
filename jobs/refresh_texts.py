@@ -6,6 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from qdrant_client import QdrantClient
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, FilterSelector
 
 logger = LogHelper.get_logger("Job.RefreshTexts")
 
@@ -27,9 +28,12 @@ def run():
             try:
                 client.delete(
                     collection_name=GUIDES_COLLECTION,
-                    points_selector={
-                        "filter": {"must": [{"key": "source", "match": {"value": file}}]}
-                    }
+                    points_selector=FilterSelector(
+                        filter=Filter(
+                            must=[FieldCondition(key="source", match=MatchValue(value=file))]
+                        )
+                    ),
+                    wait=True,  # ensures deletion finishes before you insert new chunks
                 )
                 logger.info(f"Deleted existing points for {file}")
             except Exception as e:

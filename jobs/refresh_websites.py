@@ -5,6 +5,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from qdrant_client import QdrantClient
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, FilterSelector
 
 logger = LogHelper.get_logger("Job.RefreshWebsites")
 
@@ -21,9 +22,12 @@ def run():
             try:
                 client.delete(
                     collection_name=GUIDES_COLLECTION,
-                    points_selector={
-                        "filter": {"must": [{"key": "url", "match": {"value": url}}]}
-                    }
+                    points_selector=FilterSelector(
+                        filter=Filter(
+                            must=[FieldCondition(key="url", match=MatchValue(value=url))]
+                        )
+                    ),
+                    wait=True,
                 )
                 logger.info(f"Deleted existing points for {url}")
             except Exception as e:
