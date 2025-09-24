@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+langchain
+langchain-community
+langchain-ollama
+qdrant-client
+beautifulsoup4
+requests
+pypdf
