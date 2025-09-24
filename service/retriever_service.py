@@ -6,6 +6,7 @@ from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from service.pdf_loader import LocalPdfLoader
 from service.website_loader import WebsiteLoader
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 from service.log_helper import LogHelper
 from config import (
     PDF_DIR, WEBSITES,
@@ -27,13 +28,14 @@ class RetrieverService:
         try:
             self.client.delete(
                 collection_name=collection,
-                points_selector={
-                    "filter": {"must": [{"key": key, "match": {"value": value}}]}
-                }
+                points_selector=Filter(
+                    must=[FieldCondition(key=key, match=MatchValue(value=value))]
+                ),
+                wait=True,  # ensure deletion completes before reinsert
             )
             self.logger.info(f"Deleted old points in {collection} where {key}=={value}")
         except Exception as e:
-            self.logger.warning(f"Delete filter failed ({collection}, {key}={value}): {e}")
+            self.logger.warning(f"Delete filter failed ({collection}, {key}={value}): {e}") {e}")
 
     def ingest_pdfs(self):
         pdf_files = glob.glob(f"{PDF_DIR}/*.pdf")
@@ -110,13 +112,13 @@ class RetrieverService:
 
     def get_relevant_chunks(self, query: str, k: int = 4):
         bylaw_db = QdrantVS(
-            embedding_function=self.embeddings,
-            location=self.location,
+            client=self.client,
+            embedding_function=self.embeddings.embed_query,
             collection_name=BYLAW_COLLECTION
         )
         guides_db = QdrantVS(
-            embedding_function=self.embeddings,
-            location=self.location,
+            client=self.client,
+            embedding_function=self.embeddings.embed_query,
             collection_name=GUIDES_COLLECTION
         )
 
