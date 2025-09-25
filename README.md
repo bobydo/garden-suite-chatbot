@@ -95,7 +95,7 @@ When you need to clear corrupted data or start fresh:
 **Manual API cleanup:**
 ```powershell
 # Delete all collections
-Invoke-RestMethod -Uri "http://localhost:6333/collections/guides_index" -Method Delete
+Invoke-RestMethod -Uri "http://localhost:6333/collections/website_index" -Method Delete
 Invoke-RestMethod -Uri "http://localhost:6333/collections/bylaw_index" -Method Delete
 
 # Verify cleanup
@@ -113,7 +113,7 @@ python manage.py ingest_texts     # Additional text files
 - **Agent Layer**: LangChain ReAct agent with tool selection logic
 - **Tools Layer**: Specialized search tools (`/tools/`) with real Qdrant integration  
 - **Service Layer**: Class-based services in `/service/` for core functionality
-- **Data Layer**: Qdrant vector DB with two collections: `bylaw_index` (PDFs) and `guides_index` (websites/texts)
+- **Data Layer**: Qdrant vector DB with two collections: `bylaw_index` (PDFs) and `website_index` (websites/texts)
 - **Fallback**: Traditional RAG pipeline available if agent system fails
 
 ## Configuration

@@ -6,7 +6,7 @@ This is a RAG (Retrieval-Augmented Generation) chatbot for Edmonton garden suite
 
 ### Core Components
 - **Data Sources**: PDFs (`data/pdf/`), websites (config.WEBSITES), text files (`data/processed/`)  
-- **Vector Storage**: Two Qdrant collections - `bylaw_index` (PDFs) and `guides_index` (websites/texts)
+- **Vector Storage**: Two Qdrant collections - `bylaw_index` (PDFs) and `website_index` (websites/texts)
 - **Services**: Class-based services in `/service/` handle specific responsibilities
 - **Jobs**: Background refresh scripts in `/jobs/` for periodic data updates
 - **Tools**: Placeholder classes in `/tools/` for future function calling
@@ -62,7 +62,7 @@ self._delete_by_filter(collection, "url", website_url)   # Websites
 
 ### Dual Collection Strategy
 - `bylaw_index`: Official PDF documents (zoning bylaws, regulations)
-- `guides_index`: Web content + processed text files (guides, FAQs)
+- `website_index`: Web content + processed text files (guides, FAQs)
 - **Retrieval splits k/2 between collections** to ensure balanced context
 
 ## Development Workflows

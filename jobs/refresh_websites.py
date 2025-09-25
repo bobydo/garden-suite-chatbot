@@ -44,9 +44,9 @@ def run():
         chunks,
         embedding=embeddings,
         location=f"http://{QDRANT_HOST}:{QDRANT_PORT}",
-        collection_name=GUIDES_COLLECTION
+        collection_name=WEBSITE_COLLECTION
     )
-    logger.info(f"Refreshed {len(chunks)} website chunks → {GUIDES_COLLECTION}")
+    logger.info(f"Refreshed {len(chunks)} website chunks → {WEBSITE_COLLECTION}")
 
 if __name__ == "__main__":
     run()

@@ -8,7 +8,7 @@ import re
 
 
 class FeeLookup:
-    """Real fee lookup tool that searches Qdrant GUIDES_COLLECTION for current permit fees."""
+    """Real fee lookup tool that searches Qdrant WEBSITE_COLLECTION for current permit fees."""
     
     def __init__(self):
         self.embeddings = OllamaEmbeddings(model=EMBED_MODEL)

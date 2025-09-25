@@ -12,12 +12,12 @@ if ($confirm -ne 'y' -and $confirm -ne 'Y') {
 
 Write-Host "Deleting collections..." -ForegroundColor Yellow
 
-# Delete guides_index
+# Delete website_index
 try {
-    Invoke-RestMethod -Uri "http://localhost:6333/collections/guides_index" -Method Delete | Out-Null
-    Write-Host "✓ Deleted guides_index" -ForegroundColor Green
+    Invoke-RestMethod -Uri "http://localhost:6333/collections/website_index" -Method Delete | Out-Null
+    Write-Host "✓ Deleted website_index" -ForegroundColor Green
 } catch {
-    Write-Host "! guides_index may not exist" -ForegroundColor Yellow
+    Write-Host "! website_index may not exist" -ForegroundColor Yellow
 }
 
 # Delete pdf_index  
