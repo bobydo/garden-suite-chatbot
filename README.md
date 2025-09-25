@@ -6,29 +6,20 @@
 - **Fallback Support**: Falls back to traditional RAG if agent system fails
 - **Real-time Data**: Tools query live Qdrant collections for up-to-date information
 
-## Quick start
-
-### Prerequisites
-1. **Install Docker Desktop** (free): https://www.docker.com/products/docker-desktop/
-   - Download and install for your OS (Windows/Mac/Linux)
-   - Start Docker Desktop after installation
-   
-2. **Verify Docker works**:
-   ```bash
-   docker --version
-   ```
-
 ### Setup Steps
+
+#### For Local Qdrant Users:
 ```bash
-# 1) Start Qdrant (Docker will auto-download the image)
-# Option A: Simple command
-docker run -p 6333:6333 qdrant/qdrant
+# Start Qdrant locally with custom storage path (using config file)
+C:\Tools\Qdrant\qdrant.exe --config-path C:\Tools\Qdrant\config.yaml
+```
 
-# Option B: Using docker-compose (recommended - with data persistence)
-docker-compose up -d
-
+#### Common Steps (Both Docker and Local):
+```bash
 # 2) Install Python dependencies (includes new agent dependencies)
+python -m venv myenv
 pip install -r requirements.txt
+pip install --force-reinstall -r requirements.txt
 
 # 3) Ingest local PDFs (drop into data/pdf first)
 python manage.py ingest_pdfs
@@ -46,21 +37,20 @@ python test_tools.py
 uvicorn app.main:app --reload
 ```
 
-### Docker Management
+#### Local Qdrant Commands:
 ```bash
-# Stop Qdrant
-docker-compose down          # If using docker-compose
-# OR
-docker stop <container-id>   # If using docker run
+# Start Qdrant with custom storage location (using config file)
+C:\Tools\Qdrant\start-qdrant.bat
+Start-Sleep 3; curl "http://localhost:6333/collections"
 
 # Check if Qdrant is running
-docker ps
+Open browser: http://localhost:6333/
+```
 
-# View Qdrant logs
-docker logs <container-name>
-
+#### Both Methods:
+```bash
 # Access Qdrant web UI (optional)
-# Open browser: http://localhost:6333/dashboard
+Open browser: http://localhost:6333/dashboard
 ```
 
 ## Agent Tools
@@ -84,9 +74,40 @@ docker logs <container-name>
   - Now uses intelligent agent that selects appropriate tools
   - Maintains backward compatibility with existing API
 
-## Night Jobs
-- `python jobs/refresh_websites.py`
-- `python jobs/refresh_texts.py`
+## Data Management
+
+### Regular Jobs
+- `python jobs/refresh_websites.py` - Refresh website content
+- `python jobs/refresh_texts.py` - Refresh text files
+
+### Cleanup & Reset
+When you need to clear corrupted data or start fresh:
+
+**Windows (PowerShell):**
+```powershell
+# Run interactive cleanup script
+.\jobs\cleanup_qdrant.ps1
+
+# Or use batch file
+.\jobs\cleanup_qdrant.bat
+```
+
+**Manual API cleanup:**
+```powershell
+# Delete all collections
+Invoke-RestMethod -Uri "http://localhost:6333/collections/guides_index" -Method Delete
+Invoke-RestMethod -Uri "http://localhost:6333/collections/bylaw_index" -Method Delete
+
+# Verify cleanup
+Invoke-RestMethod -Uri "http://localhost:6333/collections" -Method Get
+```
+
+**After cleanup, re-ingest data:**
+```bash
+python manage.py ingest_websites  # Clean HTML content only
+python manage.py ingest_pdfs      # Process PDFs separately  
+python manage.py ingest_texts     # Additional text files
+```
 
 ## System Architecture
 - **Agent Layer**: LangChain ReAct agent with tool selection logic

@@ -35,7 +35,7 @@ class RetrieverService:
             )
             self.logger.info(f"Deleted old points in {collection} where {key}=={value}")
         except Exception as e:
-            self.logger.warning(f"Delete filter failed ({collection}, {key}={value}): {e}") {e}")
+            self.logger.warning(f"Delete filter failed ({collection}, {key}={value}): {e}")
 
     def ingest_pdfs(self):
         pdf_files = glob.glob(f"{PDF_DIR}/*.pdf")

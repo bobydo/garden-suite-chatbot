@@ -30,11 +30,6 @@ WEBSITES = [
     "https://www.edmonton.ca/programs_services/housing/affordable-housing-developments",
     "https://www.edmonton.ca/programs_services/housing/welcome-homes",
     "https://www.edmonton.ca/projects_plans/transit/capital-line-south",
-    "https://www.edmonton.ca/public-files/assets/document?path=PDF/Approved_2012-14_Capital_Budget.pdf",
-    "https://www.edmonton.ca/public-files/assets/document?path=PDF/Discussion_Paper_4_North_Saskatchewan_River_Water_Quality.pdf",
-    "https://www.edmonton.ca/public-files/assets/document?path=PDF/Secondary_Suite_Design_Guide.pdf",
-    "https://www.edmonton.ca/public-files/assets/document?path=PDF/current_Zoning_Bylaw.pdf",
-    "https://www.edmonton.ca/public-files/assets/document?path=Residential_Landscaping_and_Hardsurfacing_Requirements.pdf",
     "https://www.edmonton.ca/residential-neighbourhoods",
     "https://www.edmonton.ca/residential_neighbourhoods/application-requirements-house-permits",
     "https://www.edmonton.ca/residential_neighbourhoods/backyard-housing",
@@ -74,10 +69,10 @@ WEBSITES = [
     "https://zoningbylaw.edmonton.ca/part-8-definitions/820-general-definitions",
     "https://zoningbylaw.edmonton.ca/setback",
     "https://zoningbylaw.edmonton.ca/street",
-    "https://timberhaus.ca/blog/average-cost-to-build-a-house-in-edmonton/?utm_source=chatgpt.com",
-    "https://www.coohom.com/article/cost-per-square-foot-to-build-a-house-in-edmonton?utm_source=chatgpt.com",
-    "https://newhomesalberta.ca/new-home-construction-costs-alberta-build-your-dream-home/?utm_source=chatgpt.com",
-    "https://christina-reid.c21.ca/2025/01/20/building-cost-vs-buying-resale-in-edmonton-which-is-right-for-you?utm_source=chatgpt.com",
+    "https://timberhaus.ca/blog/average-cost-to-build-a-house-in-edmonton",
+    "https://www.coohom.com/article/cost-per-square-foot-to-build-a-house-in-edmonton",
+    "https://newhomesalberta.ca/new-home-construction-costs-alberta-build-your-dream-home",
+    "https://christina-reid.c21.ca/2025/01/20/building-cost-vs-buying-resale-in-edmonton-which-is-right-for-you",
 ]
 
 

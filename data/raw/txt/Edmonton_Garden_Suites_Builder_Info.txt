@@ -1,0 +1,79 @@
+# Timber Haus Builder
+**Business Type:** Garden suite and custom home builder
+**Location:** Edmonton & surrounding area
+**Unique Info:**
+- Largest number of garden suites built in Edmonton
+- 45 completed, 4 under construction, 4 in design stage
+**Costs:**
+- 530 sqft suite above garage ~ $230K
+- 800 sqft at grade suite ~ $285K
+- Lot servicing/prep: $8K–$15K
+- Garage teardown (with asbestos abatement if needed) adds cost
+**Styles:**
+- Above-garage suites
+- At-grade suites
+
+
+# Michael Homes Builder
+**Business Type:** Infill builders and developers
+**Established:** 2003
+**Licenses/Certifications:**
+- Service Alberta License #345356
+- BBB A+
+- NRCan Energuide LIC-7049
+**Specialties:**
+- Backyard homes
+- Custom homes
+- Single-family homes
+- Duplexes
+- Tri-plexes
+- Fourplexes
+**Business Model:** Primarily a cost-plus builder
+
+
+# Ricky & Marcel (RE/MAX Elite) Builder
+**Contacts:**
+- {'Name': 'Ricky Hill', 'Email': 'RICKYHILL@REMAX.NET', 'Phone': '780-718-5608'}
+- {'Name': 'Marcel De Moissac', 'Email': 'MDEMOISSAC@REMAX.NET', 'Phone': '780-995-5282'}
+**Websites:**
+- www.garagesuiterealtor.com
+- www.RICKYANDMARCEL.com
+- www.MckernanGarageSuite.com
+**Office:** RE/MAX ELITE, 14717 40 Ave NW, Edmonton, AB
+**Experience:**
+- Built 3 garden suites in 2019 in McKernan neighbourhood
+- Suites ~538 sqft, cost ~$200K, rent ~$1500/month + utilities
+**Target Market:** Investors and families
+**Style:** Custom garage suite designs (e.g., 1-bed/1-bath above garage)
+
+
+# City of Edmonton (Workshop) Builder
+**Topics:**
+- Zoning regulations
+- Development permit process
+- Lot grading requirements
+- Height and setback restrictions
+- Accessibility standards (barrier-free entrances, wider hallways/doors, main floor amenities)
+**Contacts:**
+- developmentpermits@edmonton.ca
+- lot.grading@edmonton.ca
+- ces@epcor.com
+- buildingsafetycodes@edmonton.ca
+**Resources:**
+- http://edmonton.ca/backyardhousing
+- https://selfserve.edmonton.ca
+
+
+# EPCOR Utilities Builder
+**Services:**
+- Water & sewer connections
+- Electrical servicing (aerial, buried, hybrid)
+- Storm connections
+**Pitfalls:**
+- Incorrect quoting of servicing
+- Insufficient pipe size
+- Proximity to electrical lines
+**Contacts:**
+- {'Service': 'Infill Water & Sewer', 'Email': 'wass.drainage@epcor.com', 'Phone': '780-496-5444'}
+- {'Service': 'Customer Engineering Services', 'Email': 'CES@epcor.com', 'Phone': '780-412-3128'}
+
