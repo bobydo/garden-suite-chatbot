@@ -11,7 +11,7 @@ from service.log_helper import LogHelper
 from config import (
     PDF_DIR, WEBSITES,
     QDRANT_HOST, QDRANT_PORT,
-    BYLAW_COLLECTION, GUIDES_COLLECTION,
+    PDF_COLLECTION, WEBSITE_COLLECTION,
     EMBED_MODEL
 )
 
@@ -51,16 +51,16 @@ class RetrieverService:
         seen_sources = set(d.metadata.get("source") for d in docs if d is not None)
         for src in seen_sources:
             if src:
-                self._delete_by_filter(BYLAW_COLLECTION, "source", src)
+                self._delete_by_filter(PDF_COLLECTION, "source", src)
 
         chunks = self.splitter.split_documents(docs)
         QdrantVS.from_documents(
             chunks,
             embedding=self.embeddings,
             location=self.location,
-            collection_name=BYLAW_COLLECTION
+            collection_name=PDF_COLLECTION
         )
-        self.logger.info(f"Ingested {len(chunks)} PDF chunks → {BYLAW_COLLECTION}")
+        self.logger.info(f"Ingested {len(chunks)} PDF chunks → {PDF_COLLECTION}")
 
     def ingest_websites(self):
         docs = []
@@ -68,7 +68,7 @@ class RetrieverService:
             doc = WebsiteLoader(url).load()
             if doc:
                 # delete by 'url' before inserting new
-                self._delete_by_filter(GUIDES_COLLECTION, "url", url)
+                self._delete_by_filter(WEBSITE_COLLECTION, "url", url)
                 docs.append(doc)
 
         if not docs:
@@ -80,9 +80,9 @@ class RetrieverService:
             chunks,
             embedding=self.embeddings,
             location=self.location,
-            collection_name=GUIDES_COLLECTION
+            collection_name=WEBSITE_COLLECTION
         )
-        self.logger.info(f"Ingested {len(chunks)} website chunks → {GUIDES_COLLECTION}")
+        self.logger.info(f"Ingested {len(chunks)} website chunks → {WEBSITE_COLLECTION}")
 
     def ingest_texts_folder(self, texts_glob: str = "data/processed/*.txt"):
         from service.text_loader import TextLoader
@@ -92,7 +92,7 @@ class RetrieverService:
                 with open(fp, "r", encoding="utf-8") as f:
                     txt = f.read()
                 # delete old by 'source' (file path) before inserting
-                self._delete_by_filter(GUIDES_COLLECTION, "source", fp)
+                self._delete_by_filter(WEBSITE_COLLECTION, "source", fp)
                 docs.append(TextLoader(text=txt, source=fp).load())
             except Exception as e:
                 self.logger.error(f"Failed reading {fp}: {e}")
@@ -106,27 +106,27 @@ class RetrieverService:
             chunks,
             embedding=self.embeddings,
             location=self.location,
-            collection_name=GUIDES_COLLECTION
+            collection_name=WEBSITE_COLLECTION
         )
-        self.logger.info(f"Ingested {len(chunks)} text chunks → {GUIDES_COLLECTION}")
+        self.logger.info(f"Ingested {len(chunks)} text chunks → {WEBSITE_COLLECTION}")
 
     def get_relevant_chunks(self, query: str, k: int = 4):
-        bylaw_db = QdrantVS(
+        pdf_db = QdrantVS(
             client=self.client,
             embedding_function=self.embeddings.embed_query,
-            collection_name=BYLAW_COLLECTION
+            collection_name=PDF_COLLECTION
         )
         guides_db = QdrantVS(
             client=self.client,
             embedding_function=self.embeddings.embed_query,
-            collection_name=GUIDES_COLLECTION
+            collection_name=WEBSITE_COLLECTION
         )
 
         a = max(1, k//2)
         b = max(1, k - a)
 
-        bylaw_hits = bylaw_db.similarity_search(query, k=a)
+        pdf_hits = pdf_db.similarity_search(query, k=a)
         guides_hits = guides_db.similarity_search(query, k=b)
 
-        self.logger.info(f"Retrieved {len(bylaw_hits)} bylaw + {len(guides_hits)} guides chunks")
-        return bylaw_hits + guides_hits
+        self.logger.info(f"Retrieved {len(pdf_hits)} PDF + {len(guides_hits)} guides chunks")
+        return pdf_hits + guides_hits

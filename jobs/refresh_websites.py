@@ -1,4 +1,4 @@
-from config import WEBSITES, GUIDES_COLLECTION, QDRANT_HOST, QDRANT_PORT, EMBED_MODEL
+from config import WEBSITES, WEBSITE_COLLECTION, QDRANT_HOST, QDRANT_PORT, EMBED_MODEL
 from service.website_loader import WebsiteLoader
 from service.log_helper import LogHelper
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -21,7 +21,7 @@ def run():
             # delete existing by URL
             try:
                 client.delete(
-                    collection_name=GUIDES_COLLECTION,
+                    collection_name=WEBSITE_COLLECTION,
                     points_selector=FilterSelector(
                         filter=Filter(
                             must=[FieldCondition(key="url", match=MatchValue(value=url))]

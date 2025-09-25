@@ -3,11 +3,11 @@ from qdrant_client import QdrantClient
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from service.log_helper import LogHelper
-from config import QDRANT_HOST, QDRANT_PORT, BYLAW_COLLECTION, EMBED_MODEL
+from config import QDRANT_HOST, QDRANT_PORT, PDF_COLLECTION, EMBED_MODEL
 
 
 class BylawLookup:
-    """Real bylaw lookup tool that searches Qdrant BYLAW_COLLECTION for precise bylaw sections."""
+    """Real bylaw lookup tool that searches Qdrant PDF_COLLECTION for precise bylaw sections."""
     
     def __init__(self):
         self.embeddings = OllamaEmbeddings(model=EMBED_MODEL)
@@ -28,17 +28,17 @@ class BylawLookup:
         """
         try:
             # Create vector store connection
-            bylaw_db = QdrantVS(
+            pdf_db = QdrantVS(
                 client=self.client,
                 embedding_function=self.embeddings.embed_query,
-                collection_name=BYLAW_COLLECTION
+                collection_name=PDF_COLLECTION
             )
             
             # Build enhanced search query
             search_query = self._build_search_query(section_or_term, zone, lot_context)
             
             # Search for relevant bylaw sections
-            results = bylaw_db.similarity_search_with_score(search_query, k=3)
+            results = pdf_db.similarity_search_with_score(search_query, k=3)
             
             if not results:
                 self.logger.warning(f"No bylaw results found for: {section_or_term}")

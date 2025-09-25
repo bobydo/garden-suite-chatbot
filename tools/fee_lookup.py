@@ -3,7 +3,7 @@ from qdrant_client import QdrantClient
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from service.log_helper import LogHelper
-from config import QDRANT_HOST, QDRANT_PORT, GUIDES_COLLECTION, EMBED_MODEL
+from config import QDRANT_HOST, QDRANT_PORT, WEBSITE_COLLECTION, EMBED_MODEL
 import re
 
 
@@ -30,7 +30,7 @@ class FeeLookup:
             guides_db = QdrantVS(
                 client=self.client,
                 embedding_function=self.embeddings.embed_query,
-                collection_name=GUIDES_COLLECTION
+                collection_name=WEBSITE_COLLECTION
             )
             
             # Build search query focused on fees

@@ -4,14 +4,14 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PDF_DIR = os.path.join(BASE_DIR, "data", "pdf")
 WEBSITES_DIR = os.path.join(BASE_DIR, "data", "websites")
-TEXTS_DIR = os.path.join(BASE_DIR, "data", "processed")
+TEXTS_DIR = os.path.join(BASE_DIR, "data", "txt")
 INDEX_DIR = os.path.join(BASE_DIR, "index", "qdrant")
 
 # === Qdrant settings ===
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
-BYLAW_COLLECTION = "bylaw_index"
-GUIDES_COLLECTION = "guides_index"
+PDF_COLLECTION = "pdf_index"
+WEBSITE_COLLECTION = "website_index"
 
 # === Ollama models ===
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
@@ -74,5 +74,11 @@ WEBSITES = [
     "https://newhomesalberta.ca/new-home-construction-costs-alberta-build-your-dream-home",
     "https://christina-reid.c21.ca/2025/01/20/building-cost-vs-buying-resale-in-edmonton-which-is-right-for-you",
 ]
+
+# Minimum total characters from the cheap HTML loader before skipping Playwright
+# If the initial WebBaseLoader result has at least this many characters across documents,
+# we consider it "good enough" and avoid the heavier Playwright render.
+# Tune higher to be stricter (render more often), lower to render less. Try 1200-2000 if render more
+HTML_MIN_TEXT_CHARS = 600
 
 

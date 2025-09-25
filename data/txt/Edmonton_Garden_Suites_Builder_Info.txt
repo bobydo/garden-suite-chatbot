@@ -1,4 +1,6 @@
 # Timber Haus Builder
+**Websites:**
+- timberhaus.ca
 **Business Type:** Garden suite and custom home builder
 **Location:** Edmonton & surrounding area
 **Unique Info:**
@@ -15,6 +17,8 @@
 
 
 # Michael Homes Builder
+**Websites:**
+- michaelhomesinc.ca
 **Business Type:** Infill builders and developers
 **Established:** 2003
 **Licenses/Certifications:**
@@ -32,6 +36,8 @@
 
 
 # Ricky & Marcel (RE/MAX Elite) Builder
+**Websites:**
+- https://riverbendricky.com/
 **Contacts:**
 - {'Name': 'Ricky Hill', 'Email': 'RICKYHILL@REMAX.NET', 'Phone': '780-718-5608'}
 - {'Name': 'Marcel De Moissac', 'Email': 'MDEMOISSAC@REMAX.NET', 'Phone': '780-995-5282'}
@@ -47,7 +53,7 @@
 **Style:** Custom garage suite designs (e.g., 1-bed/1-bath above garage)
 
 
-# City of Edmonton (Workshop) Builder
+# City of Edmonton (Workshop)
 **Topics:**
 - Zoning regulations
 - Development permit process
@@ -64,7 +70,7 @@
 - https://selfserve.edmonton.ca
 
 
-# EPCOR Utilities Builder
+# EPCOR Utilities
 **Services:**
 - Water & sewer connections
 - Electrical servicing (aerial, buried, hybrid)
