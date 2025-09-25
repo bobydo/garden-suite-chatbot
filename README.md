@@ -21,8 +21,7 @@ python -m venv myenv
 pip install -r requirements.txt
 pip install --force-reinstall -r requirements.txt
 
-# 3) Ingest local PDFs (drop into data/pdf first)
-python manage.py ingest_pdfs
+# 3) Ingest local PDFs (drop into da
 
 # 4) Ingest City websites
 python manage.py ingest_websites
