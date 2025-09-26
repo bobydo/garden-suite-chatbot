@@ -9,10 +9,10 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, PointIdsList
 from service.log_helper import LogHelper
 import config
-from typing import List
+from typing import List, Sequence, cast
 
 def is_likely_corrupted(content: str, threshold: float = 0.2) -> bool:
     """
@@ -103,9 +103,11 @@ def delete_corrupted_points(collection_name: str, point_ids: List[str]) -> bool:
     try:
         logger.info(f"Deleting {len(point_ids)} corrupted points from {collection_name}...")
         
+        # Qdrant expects a list of ExtendedPointId (int | str). Ensure correct type for static checker.
+        ids_seq: Sequence[str] = cast(Sequence[str], point_ids)
         client.delete(
             collection_name=collection_name,
-            points_selector=point_ids,
+            points_selector=PointIdsList(points=list(ids_seq)),
             wait=True
         )
         

@@ -151,3 +151,34 @@ cd database_tools
 - Set `use_agents=False` in PipelineService to disable agent mode
 - Agent system automatically falls back to RAG on errors
 - All Qdrant/Ollama settings remain in `config.py` with environment variable overrides
+
+## Linting and Type Checking
+Use Pyright for fast, repo-wide static type checking and to catch many bugs early.
+
+Quick run (no install needed):
+
+```powershell
+# Runs Pyright across the entire project
+npx pyright
+```
+
+Optional global install:
+
+```powershell
+npm install -g pyright
+pyright
+```
+
+Syntax-only checks (no type checking):
+
+```powershell
+# Compile all Python files to bytecode to catch syntax errors
+python -m compileall -f -j 4 .
+
+# Or compile a single file
+python -m py_compile path\to\file.py
+```
+
+Tips:
+- In VS Code, Pylance shows issues live in the Problems panel.
+- Prefer Pyright for CI/static analysis and Pylance for interactive editing.

@@ -143,7 +143,8 @@ class ExcelLoader:
             for col in df.columns:
                 value = row[col]
                 # Handle NaN values
-                if pd.isna(value):
+                # Explicitly convert to bool for static type checkers
+                if bool(pd.isna(value)):
                     value = "[EMPTY]"
                 else:
                     value = str(value).strip()
