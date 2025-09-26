@@ -86,16 +86,11 @@ Open browser: http://localhost:6333/dashboard
 - `python jobs/refresh_websites.py` - Refresh website content
 - `python jobs/refresh_texts.py` - Refresh text files
 
-### Cleanup & Reset
-When you need to clear corrupted data or start fresh:
-
-**Windows (PowerShell):**
-```powershell
-# Run interactive cleanup script
-.\jobs\cleanup_qdrant.ps1
-
-# Or use batch file
-.\jobs\cleanup_qdrant.bat
+### Cleanup 
+**Advanced Corruption Detection & Cleanup:**
+```bash
+# Scan all collections for binary garbage and corrupted data
+python database_tools/advanced_cleanup.py
 ```
 
 **Manual API cleanup:**
