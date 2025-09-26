@@ -9,9 +9,9 @@ from service.website_loader import WebsiteLoader
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 from service.log_helper import LogHelper
 from config import (
-    PDF_DIR, WEBSITES,
+    PDF_DIR, WEBSITES, EXCELS,
     QDRANT_HOST, QDRANT_PORT,
-    PDF_COLLECTION, WEBSITE_COLLECTION,
+    PDF_COLLECTION, WEBSITE_COLLECTION, EXCEL_COLLECTION,
     EMBED_MODEL
 )
 
@@ -110,7 +110,50 @@ class RetrieverService:
         )
         self.logger.info(f"Ingested {len(chunks)} text chunks → {WEBSITE_COLLECTION}")
 
-    def get_relevant_chunks(self, query: str, k: int = 4):
+    def ingest_excel_files(self, excel_glob: str = "data/excel/*.xlsx"):
+        from service.excel_loader import ExcelLoader
+        docs = []
+        
+        # Process local Excel files
+        excel_files = glob.glob(excel_glob) + glob.glob("data/excel/*.xls")
+        for fp in excel_files:
+            try:
+                self.logger.info(f"Processing Excel file: {fp}")
+                # Delete old data by 'source' before inserting
+                self._delete_by_filter(EXCEL_COLLECTION, "source", fp)
+                excel_docs = ExcelLoader(fp).load()
+                docs.extend(excel_docs)
+            except Exception as e:
+                self.logger.error(f"Failed processing Excel file {fp}: {e}")
+
+        # Process Excel URLs from EXCELS config
+        if EXCELS:
+            self.logger.info(f"Found {len(EXCELS)} Excel URLs in config")
+        
+        for url in EXCELS:
+            try:
+                self.logger.info(f"Processing Excel URL: {url}")
+                # Delete old data by 'url' before inserting
+                self._delete_by_filter(EXCEL_COLLECTION, "url", url)
+                excel_docs = ExcelLoader(url).load()
+                docs.extend(excel_docs)
+            except Exception as e:
+                self.logger.error(f"Failed processing Excel URL {url}: {e}")
+
+        if not docs:
+            self.logger.warning("No Excel files to ingest. Place .xlsx/.xls files in data/excel/ or add Excel URLs to config.")
+            return
+
+        chunks = self.splitter.split_documents(docs)
+        QdrantVS.from_documents(
+            chunks,
+            embedding=self.embeddings,
+            location=self.location,
+            collection_name=EXCEL_COLLECTION
+        )
+        self.logger.info(f"Ingested {len(chunks)} Excel chunks → {EXCEL_COLLECTION}")
+
+    def get_relevant_chunks(self, query: str, k: int = 6):
         pdf_db = QdrantVS(
             client=self.client,
             embedding_function=self.embeddings.embed_query,
@@ -121,12 +164,20 @@ class RetrieverService:
             embedding_function=self.embeddings.embed_query,
             collection_name=WEBSITE_COLLECTION
         )
+        excel_db = QdrantVS(
+            client=self.client,
+            embedding_function=self.embeddings.embed_query,
+            collection_name=EXCEL_COLLECTION
+        )
 
-        a = max(1, k//2)
-        b = max(1, k - a)
+        # Split k across three collections
+        a = max(1, k//3)           # PDF chunks
+        b = max(1, k//3)           # Website chunks  
+        c = max(1, k - a - b)      # Excel chunks (gets remainder)
 
         pdf_hits = pdf_db.similarity_search(query, k=a)
         guides_hits = guides_db.similarity_search(query, k=b)
+        excel_hits = excel_db.similarity_search(query, k=c)
 
-        self.logger.info(f"Retrieved {len(pdf_hits)} PDF + {len(guides_hits)} guides chunks")
-        return pdf_hits + guides_hits
+        self.logger.info(f"Retrieved {len(pdf_hits)} PDF + {len(guides_hits)} guides + {len(excel_hits)} excel chunks")
+        return pdf_hits + guides_hits + excel_hits

@@ -10,10 +10,11 @@ param(
 $timestamp = Get-Date -Format "yyyyMMdd"
 
 # Define collections and output files
-$collections = @("website_index", "pdf_index")
+$collections = @("website_index", "pdf_index", "excel_index")
 $outputFiles = @(
     "qdrant_website_index_all_points_$timestamp.json",
-    "qdrant_pdf_index_all_points_$timestamp.json"
+    "qdrant_pdf_index_all_points_$timestamp.json",
+    "qdrant_excel_index_all_points_$timestamp.json"
 )
 
 Write-Host "=== QDRANT DATA EXPORT ===" -ForegroundColor Cyan
@@ -113,6 +114,9 @@ for ($i = 0; $i -lt $collections.Count; $i++) {
                     if ($collection -eq "website_index") {
                         $summary += "    $($j+1). URL: $($point.payload.metadata.url)"
                         $summary += "       Content: $($point.payload.page_content.Substring(0, [Math]::Min(100, $point.payload.page_content.Length)))..."
+                    } elseif ($collection -eq "excel_index") {
+                        $summary += "    $($j+1). Sheet: $($point.payload.metadata.sheet_name), Source: $($point.payload.metadata.source -replace '.*\\', '')"
+                        $summary += "       Rows/Cols: $($point.payload.metadata.rows)/$($point.payload.metadata.columns), Content: $($point.payload.page_content.Substring(0, [Math]::Min(100, $point.payload.page_content.Length)))..."
                     } else {
                         $summary += "    $($j+1). Source: $($point.payload.metadata.source)"
                         $summary += "       Page: $($point.payload.metadata.page), Content: $($point.payload.page_content.Substring(0, [Math]::Min(100, $point.payload.page_content.Length)))..."

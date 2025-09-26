@@ -8,5 +8,7 @@ beautifulsoup4
 requests
 pypdf
 playwright
+pandas
+openpyxl
 # Additional dependencies for LangChain agents
 langchain-experimental

@@ -27,7 +27,7 @@ Write-Host ""
 Write-Host "Deleting collections..." -ForegroundColor Yellow
 
 # List of collections to delete
-$collections = @("website_index", "pdf_index")
+$collections = @("website_index", "pdf_index", "excel_index")
 
 foreach ($collection in $collections) {
     try {

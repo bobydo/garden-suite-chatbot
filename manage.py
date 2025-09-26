@@ -3,7 +3,7 @@ from service.retriever_service import RetrieverService
 
 def main():
     parser = argparse.ArgumentParser(description="Garden Suite Chatbot Manager")
-    parser.add_argument("cmd", choices=["ingest_pdfs", "ingest_websites", "ingest_texts"], help="Command to run")
+    parser.add_argument("cmd", choices=["ingest_pdfs", "ingest_websites", "ingest_texts", "ingest_excel"], help="Command to run")
     args = parser.parse_args()
 
     r = RetrieverService()
@@ -13,6 +13,8 @@ def main():
         r.ingest_websites()
     elif args.cmd == "ingest_texts":
         r.ingest_texts_folder()
+    elif args.cmd == "ingest_excel":
+        r.ingest_excel_files()
     else:
         print("Unknown command.")
 

@@ -20,6 +20,14 @@ try {
     Write-Host "! website_index may not exist" -ForegroundColor Yellow
 }
 
+# Delete excel_index
+try {
+    Invoke-RestMethod -Uri "http://localhost:6333/collections/excel_index" -Method Delete | Out-Null
+    Write-Host "✓ Deleted excel_index" -ForegroundColor Green
+} catch {
+    Write-Host "! excel_index may not exist" -ForegroundColor Yellow
+}
+
 # Delete pdf_index  
 try {
     Invoke-RestMethod -Uri "http://localhost:6333/collections/pdf_index" -Method Delete | Out-Null

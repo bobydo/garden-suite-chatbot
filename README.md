@@ -30,13 +30,16 @@ python manage.py ingest_pdfs
 # 4) Ingest City websites
 python manage.py ingest_websites
 
-# 5) (Optional) Ingest text notes in data/processed/*.txt
+# 5) (Optional) Ingest Excel files (drop into data/excel first)
+python manage.py ingest_excel
+
+# 6) (Optional) Ingest text notes in data/processed/*.txt
 python manage.py ingest_texts
 
-# 6) Test the tools integration (optional)
+# 7) Test the tools integration (optional)
 python test_tools.py
 
-# 7) Run API
+# 8) Run API
 uvicorn app.main:app --reload
 ```
 
@@ -99,7 +102,8 @@ When you need to clear corrupted data or start fresh:
 ```powershell
 # Delete all collections
 Invoke-RestMethod -Uri "http://localhost:6333/collections/website_index" -Method Delete
-Invoke-RestMethod -Uri "http://localhost:6333/collections/bylaw_index" -Method Delete
+Invoke-RestMethod -Uri "http://localhost:6333/collections/pdf_index" -Method Delete
+Invoke-RestMethod -Uri "http://localhost:6333/collections/excel_index" -Method Delete
 
 # Verify cleanup
 Invoke-RestMethod -Uri "http://localhost:6333/collections" -Method Get
@@ -108,7 +112,8 @@ Invoke-RestMethod -Uri "http://localhost:6333/collections" -Method Get
 **After cleanup, re-ingest data:**
 ```bash
 python manage.py ingest_websites  # Clean HTML content only
-python manage.py ingest_pdfs      # Process PDFs separately  
+python manage.py ingest_pdfs      # Process PDFs separately
+python manage.py ingest_excel     # Process Excel files
 python manage.py ingest_texts     # Additional text files
 ```
 
@@ -129,7 +134,8 @@ cd database_tools
 
 **Generated files:**
 - `qdrant_website_index_all_points_YYYYMMDD.json` - All website data points
-- `qdrant_pdf_index_all_points_YYYYMMDD.json` - All PDF data points  
+- `qdrant_pdf_index_all_points_YYYYMMDD.json` - All PDF data points
+- `qdrant_excel_index_all_points_YYYYMMDD.json` - All Excel data points  
 - `qdrant_export_summary_YYYYMMDD.txt` - Human-readable summary report
 
 **Features:**
@@ -143,7 +149,7 @@ cd database_tools
 - **Agent Layer**: LangChain ReAct agent with tool selection logic
 - **Tools Layer**: Specialized search tools (`/tools/`) with real Qdrant integration  
 - **Service Layer**: Class-based services in `/service/` for core functionality
-- **Data Layer**: Qdrant vector DB with two collections: `bylaw_index` (PDFs) and `website_index` (websites/texts)
+- **Data Layer**: Qdrant vector DB with three collections: `pdf_index` (PDFs), `website_index` (websites/texts), and `excel_index` (Excel files)
 - **Fallback**: Traditional RAG pipeline available if agent system fails
 
 ## Configuration

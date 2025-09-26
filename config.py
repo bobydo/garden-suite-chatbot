@@ -5,6 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PDF_DIR = os.path.join(BASE_DIR, "data", "pdf")
 WEBSITES_DIR = os.path.join(BASE_DIR, "data", "websites")
 TEXTS_DIR = os.path.join(BASE_DIR, "data", "txt")
+EXCEL_DIR = os.path.join(BASE_DIR, "data", "excel")
 INDEX_DIR = os.path.join(BASE_DIR, "index", "qdrant")
 
 # === Qdrant settings ===
@@ -12,6 +13,7 @@ QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 PDF_COLLECTION = "pdf_index"
 WEBSITE_COLLECTION = "website_index"
+EXCEL_COLLECTION = "excel_index"
 
 # === Ollama models ===
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
@@ -19,6 +21,11 @@ EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 
 # === Prompt file ===
 SYSTEM_PROMPT_PATH = os.path.join(BASE_DIR, "prompts", "system_prompt.txt")
+
+# === Excel files (URLs only) ===
+EXCELS = [
+    "https://www.edmonton.ca/sites/default/files/public-files/assets/ProvincialFCSSMeasuresBank.xlsx?cb=1687494504",
+]
 
 # === Websites (URLs only) ===
 WEBSITES = [
@@ -38,7 +45,6 @@ WEBSITES = [
     "https://www.edmonton.ca/residential_neighbourhoods/residential-construction",
     "https://www.edmonton.ca/residential_neighbourhoods/secondary-suites",
     "https://www.edmonton.ca/residential_neighbourhoods/uncovered-deck",
-    "https://www.edmonton.ca/sites/default/files/public-files/assets/ProvincialFCSSMeasuresBank.xlsx?cb=1687494504",
     "https://zoningbylaw.edmonton.ca/backyard-housing",
     "https://zoningbylaw.edmonton.ca/bylaw-pdf-print",
     "https://zoningbylaw.edmonton.ca/dc-20974",
@@ -80,5 +86,10 @@ WEBSITES = [
 # we consider it "good enough" and avoid the heavier Playwright render.
 # Tune higher to be stricter (render more often), lower to render less. Try 1200-2000 if render more
 HTML_MIN_TEXT_CHARS = 600
+
+# === Excel processing limits ===
+# Maximum number of rows to process per Excel sheet to prevent huge documents
+# Large Excel files can create documents that exceed token limits and slow processing
+EXCEL_MAX_ROWS_PER_SHEET = int(os.getenv("EXCEL_MAX_ROWS_PER_SHEET", "1000"))
 
 

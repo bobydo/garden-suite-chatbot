@@ -1,5 +1,5 @@
 ﻿=== QDRANT EXPORT SUMMARY ===
-Generated: 09/25/2025 20:37:18
+Generated: 09/25/2025 21:04:42
 Export Date: 20250925
 
 website_index : 4782 points -> qdrant_website_index_all_points_20250925.json
@@ -44,8 +44,18 @@ it
 meets
 the...
 
-TOTAL POINTS: 11160
+excel_index : 514 points -> qdrant_excel_index_all_points_20250925.json
+  Sample entries:
+    1. Sheet: Positive Attitude Towards Other, Source: tmpke58wl0u.xlsx
+       Rows/Cols: 45/9, Content: Row 37: IMPROVED SOCIAL WELL-BEING OF COMMUNITY: 22 | Unnamed: 1: I am comfortable being with people...
+    2. Sheet: Resilience, Source: tmpke58wl0u.xlsx
+       Rows/Cols: 38/9, Content: Row 32: IMPROVED SOCIAL WELL-BEING OF INDIVIDUALS: 18 | Unnamed: 1: I am able to deal with my situat...
+    3. Sheet: Social Supports Avail., Source: tmpke58wl0u.xlsx
+       Rows/Cols: 51/9, Content: Row 21: IMPROVED SOCIAL WELL-BEING OF INDIVIDUALS: 4 | Unnamed: 1: I have someone that I can relax w...
+
+TOTAL POINTS: 11674
 
 Files created:
   qdrant_website_index_all_points_20250925.json (6.65 MB)
   qdrant_pdf_index_all_points_20250925.json (12.91 MB)
+  qdrant_excel_index_all_points_20250925.json (0.73 MB)
