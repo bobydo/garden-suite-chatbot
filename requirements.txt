@@ -7,5 +7,6 @@ qdrant-client
 beautifulsoup4
 requests
 pypdf
+playwright
 # Additional dependencies for LangChain agents
 langchain-experimental

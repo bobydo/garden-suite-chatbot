@@ -1,0 +1,51 @@
+﻿=== QDRANT EXPORT SUMMARY ===
+Generated: 09/25/2025 20:37:18
+Export Date: 20250925
+
+website_index : 4782 points -> qdrant_website_index_all_points_20250925.json
+  Sample entries:
+    1. URL: https://zoningbylaw.edmonton.ca/part-2-standard-zones-and-overlays
+       Content: a Street , a Park , or along Facades with a main entrance facing a Public Amenity Area or Parking Ar...
+    2. URL: https://zoningbylaw.edmonton.ca/part-3-special-area-zones
+       Content: Roof-top mechanical equipment and mechanical penthouses Shall be screened from view. 7.17. Trash enc...
+    3. URL: https://zoningbylaw.edmonton.ca/bylaw-pdf-print
+       Content: The notice required in Subsection 3.1 must: 3.2.1. include information about the Rezoning Amendment ...
+
+pdf_index : 6378 points -> qdrant_pdf_index_all_points_20250925.json
+  Sample entries:
+    1. Source: D:\garden-suite-chatbot\data\pdf\Zoning-Bylaw-Guide.pdf
+       Page: 30, Content: + Additional regulations such as floor area 
+restrictions and limits on outdoor activities 
+apply to...
+    2. Source: D:\garden-suite-chatbot\data\pdf\current_Zoning_Bylaw.pdf
+       Page: 763, Content: m. CPTED principles shall be used to guide the design of all public and private 
+spaces and faciliti...
+    3. Source: D:\garden-suite-chatbot\data\pdf\ZoningBylawRenewal-Responses-Councillor-Questions.pdf
+       Page: 60, Content: alone
+use.
+Any
+use,
+whether
+it
+is
+listed
+in
+a
+zone
+or
+not,
+may
+be
+allowable,
+as
+long
+as
+it
+meets
+the...
+
+TOTAL POINTS: 11160
+
+Files created:
+  qdrant_website_index_all_points_20250925.json (6.65 MB)
+  qdrant_pdf_index_all_points_20250925.json (12.91 MB)
