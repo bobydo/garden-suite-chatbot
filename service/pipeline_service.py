@@ -122,19 +122,34 @@ Question: {input}
         except Exception as e:
             self.logger.error(f"Chat processing failed: {e}")
             # Fallback to RAG on any error
-            return self._fallback_rag(user_question, history)
+            try:
+                return self._fallback_rag(user_question, history)
+            except Exception as inner:
+                self.logger.error(f"RAG fallback also failed: {inner}")
+                return (
+                    "I'm having trouble right now. Please ensure dependencies are running: "
+                    "- Ollama server (ollama serve) with model set in OLLAMA_MODEL, and "
+                    "- Qdrant at the configured host/port. "
+                    "Then try your question again."
+                )
 
     def _fallback_rag(self, user_question: str, history: list) -> str:
         """Original RAG-based approach as fallback."""
-        # 1) Retrieve
-        hits = self.retriever.get_relevant_chunks(user_question, k=4)
-        if not hits:
-            retrieved_chunks = "(no context retrieved)"
-        else:
-            retrieved_chunks = "\n".join(
-                f"• {h.metadata.get('title', h.metadata.get('source', h.metadata.get('url','(no-url)')))} "
-                f"({h.metadata.get('url', h.metadata.get('source',''))}) — {h.page_content[:240]}..."
-                for h in hits
+        # 1) Retrieve (defensive against Qdrant issues)
+        try:
+            hits = self.retriever.get_relevant_chunks(user_question, k=4)
+            if not hits:
+                retrieved_chunks = "(no context retrieved)"
+            else:
+                retrieved_chunks = "\n".join(
+                    f"• {h.metadata.get('title', h.metadata.get('source', h.metadata.get('url','(no-url)')))} "
+                    f"({h.metadata.get('url', h.metadata.get('source',''))}) — {h.page_content[:240]}..."
+                    for h in hits
+                )
+        except Exception as e:
+            self.logger.error(f"Retriever failed: {e}")
+            retrieved_chunks = (
+                "(retrieval failed: Qdrant may be unavailable; please ensure Qdrant is running)"
             )
 
         # 2) Build messages
@@ -146,6 +161,13 @@ Question: {input}
         )
 
         # 3) Call Ollama
-        resp = self.llm.invoke(messages)
-        self.logger.info(f"RAG fallback answered: {user_question}")
-        return getattr(resp, "content", str(resp))
+        try:
+            resp = self.llm.invoke(messages)
+            self.logger.info(f"RAG fallback answered: {user_question}")
+            return getattr(resp, "content", str(resp))
+        except Exception as e:
+            self.logger.error(f"LLM invocation failed: {e}")
+            return (
+                "I couldn't generate an answer because the language model isn't reachable. "
+                "Please ensure Ollama is running (ollama serve) and the model is available (e.g., ollama pull llama3)."
+            )

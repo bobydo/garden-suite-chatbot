@@ -12,3 +12,4 @@ pandas
 openpyxl
 # Additional dependencies for LangChain agents
 langchain-experimental
+python-docx
