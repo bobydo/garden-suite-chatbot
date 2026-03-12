@@ -1,5 +1,4 @@
 import glob
-from typing import List
 from qdrant_client import QdrantClient
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
@@ -8,11 +7,13 @@ from service.pdf_loader import LocalPdfLoader
 from service.website_loader import WebsiteLoader
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 from service.log_helper import LogHelper
+from rank_bm25 import BM25Okapi
 from config import (
     PDF_DIR, WEBSITES, EXCELS,
     QDRANT_HOST, QDRANT_PORT,
     PDF_COLLECTION, WEBSITE_COLLECTION, EXCEL_COLLECTION,
-    EMBED_MODEL
+    EMBED_MODEL,
+    RETRIEVAL_SCORE_THRESHOLD, HYBRID_ALPHA, HYBRID_FETCH_MULTIPLIER,
 )
 
 class RetrieverService:
@@ -159,7 +160,7 @@ class RetrieverService:
             embedding_function=self.embeddings.embed_query,
             collection_name=PDF_COLLECTION
         )
-        guides_db = QdrantVS(
+        website_db = QdrantVS(
             client=self.client,
             embedding_function=self.embeddings.embed_query,
             collection_name=WEBSITE_COLLECTION
@@ -170,14 +171,50 @@ class RetrieverService:
             collection_name=EXCEL_COLLECTION
         )
 
-        # Split k across three collections
-        a = max(1, k//3)           # PDF chunks
-        b = max(1, k//3)           # Website chunks  
-        c = max(1, k - a - b)      # Excel chunks (gets remainder)
+        # Fetch more candidates than needed so BM25 has a meaningful pool to score
+        a = max(1, k // 3) * HYBRID_FETCH_MULTIPLIER
+        b = max(1, k // 3) * HYBRID_FETCH_MULTIPLIER
+        c = max(1, k - (k // 3) * 2) * HYBRID_FETCH_MULTIPLIER
 
-        pdf_hits = pdf_db.similarity_search(query, k=a)
-        guides_hits = guides_db.similarity_search(query, k=b)
-        excel_hits = excel_db.similarity_search(query, k=c)
+        pdf_hits = pdf_db.similarity_search_with_score(query, k=a)
+        website_hits = website_db.similarity_search_with_score(query, k=b)
+        excel_hits = excel_db.similarity_search_with_score(query, k=c)
 
-        self.logger.info(f"Retrieved {len(pdf_hits)} PDF + {len(guides_hits)} guides + {len(excel_hits)} excel chunks")
-        return pdf_hits + guides_hits + excel_hits
+        all_candidates = pdf_hits + website_hits + excel_hits  # List[Tuple[Document, float]]
+
+        # --- Score threshold filtering (distance: lower = more relevant) ---
+        filtered = [(doc, score) for doc, score in all_candidates if score <= RETRIEVAL_SCORE_THRESHOLD]
+        if not filtered:
+            self.logger.warning(
+                f"All {len(all_candidates)} candidates exceeded threshold {RETRIEVAL_SCORE_THRESHOLD}; "
+                "falling back to top-k by vector score."
+            )
+            filtered = sorted(all_candidates, key=lambda x: x[1])[:k]
+
+        # --- BM25 scoring on filtered candidates ---
+        tokenized_corpus = [doc.page_content.lower().split() for doc, _ in filtered]
+        query_tokens = query.lower().split()
+        bm25 = BM25Okapi(tokenized_corpus)
+        bm25_scores = bm25.get_scores(query_tokens)  # higher = more relevant
+
+        max_bm25 = max(bm25_scores) if max(bm25_scores) > 0 else 1.0
+
+        # --- Hybrid scoring: combine vector relevance + BM25 relevance ---
+        scored = []
+        for i, (doc, dist) in enumerate(filtered):
+            vector_relevance = 1.0 - dist                      # invert distance → relevance
+            bm25_relevance = bm25_scores[i] / max_bm25         # normalize to [0, 1]
+            final_score = HYBRID_ALPHA * vector_relevance + (1 - HYBRID_ALPHA) * bm25_relevance
+            scored.append((doc, final_score))
+
+        # Sort by combined score descending, return top k Documents
+        scored.sort(key=lambda x: x[1], reverse=True)
+        results = [doc for doc, _ in scored[:k]]
+
+        self.logger.info(
+            f"Hybrid retrieval: {len(pdf_hits)} PDF + {len(website_hits)} website + "
+            f"{len(excel_hits)} excel candidates → {len(filtered)} passed threshold → "
+            f"returning top {len(results)}"
+        )
+
+        return results

@@ -13,3 +13,5 @@ openpyxl
 # Additional dependencies for LangChain agents
 langchain-experimental
 python-docx
+rank-bm25
+langgraph

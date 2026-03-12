@@ -92,4 +92,12 @@ HTML_MIN_TEXT_CHARS = 600
 # Large Excel files can create documents that exceed token limits and slow processing
 EXCEL_MAX_ROWS_PER_SHEET = int(os.getenv("EXCEL_MAX_ROWS_PER_SHEET", "1000"))
 
+# === Retrieval quality settings ===
+# Cosine distance threshold — candidates with distance > threshold are discarded (0=identical, 1=orthogonal)
+RETRIEVAL_SCORE_THRESHOLD = float(os.getenv("RETRIEVAL_SCORE_THRESHOLD", "0.65"))
+# Weight for vector similarity vs BM25 in hybrid scoring (1.0 = pure vector, 0.0 = pure BM25)
+HYBRID_ALPHA = float(os.getenv("HYBRID_ALPHA", "0.7"))
+# How many extra candidates to fetch per collection before filtering (gives BM25 a wider pool)
+HYBRID_FETCH_MULTIPLIER = int(os.getenv("HYBRID_FETCH_MULTIPLIER", "3"))
+
 
