@@ -14,6 +14,7 @@ QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 PDF_COLLECTION = "pdf_index"
 WEBSITE_COLLECTION = "website_index"
 EXCEL_COLLECTION = "excel_index"
+TEXT_COLLECTION = "text_index"
 
 # === Ollama models ===
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")

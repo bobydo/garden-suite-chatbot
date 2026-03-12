@@ -1,7 +1,7 @@
 import time
 from typing import List
 from langchain_community.document_loaders import OnlinePDFLoader
-from langchain.schema import Document
+from langchain_core.documents import Document
 from playwright.sync_api import sync_playwright
 from service.log_helper import LogHelper
 from config import HTML_MIN_TEXT_CHARS

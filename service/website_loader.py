@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from langchain.schema import Document
+from langchain_core.documents import Document
 from service.log_helper import LogHelper
 from service.hash_helper import HashHelper
 from service.html_playwright_loader import HtmlPlaywrightLoader

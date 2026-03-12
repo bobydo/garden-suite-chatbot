@@ -1,4 +1,4 @@
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from config import SYSTEM_PROMPT_PATH
 
 with open(SYSTEM_PROMPT_PATH, encoding="utf-8") as f:

@@ -1,7 +1,7 @@
 from config import WEBSITES, WEBSITE_COLLECTION, QDRANT_HOST, QDRANT_PORT, EMBED_MODEL
 from service.website_loader import WebsiteLoader
 from service.log_helper import LogHelper
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from qdrant_client import QdrantClient

@@ -1,8 +1,8 @@
 import glob
-from config import TEXTS_DIR, WEBSITE_COLLECTION, QDRANT_HOST, QDRANT_PORT, EMBED_MODEL
+from config import TEXTS_DIR, TEXT_COLLECTION, QDRANT_HOST, QDRANT_PORT, EMBED_MODEL
 from service.text_loader import TextLoader
 from service.log_helper import LogHelper
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from qdrant_client import QdrantClient
@@ -27,7 +27,7 @@ def run():
             # delete existing by source
             try:
                 client.delete(
-                    collection_name=WEBSITE_COLLECTION,
+                    collection_name=TEXT_COLLECTION,
                     points_selector=FilterSelector(
                         filter=Filter(
                             must=[FieldCondition(key="source", match=MatchValue(value=file))]
@@ -48,9 +48,9 @@ def run():
         chunks,
         embedding=embeddings,
         location=f"http://{QDRANT_HOST}:{QDRANT_PORT}",
-        collection_name=WEBSITE_COLLECTION
+        collection_name=TEXT_COLLECTION
     )
-    logger.info(f"Refreshed {len(chunks)} text chunks → {WEBSITE_COLLECTION}")
+    logger.info(f"Refreshed {len(chunks)} text chunks → {TEXT_COLLECTION}")
 
 if __name__ == "__main__":
     run()

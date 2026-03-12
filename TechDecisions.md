@@ -63,6 +63,40 @@ Use these when asked "why did you choose X?" or "walk me through your architectu
 
 ---
 
+## LangChain vs LangGraph — Different Roles in This Project
+
+These are not interchangeable — they solve different problems at different layers.
+
+**LangChain — the ingestion and retrieval toolkit**
+
+Used across loaders, splitters, embeddings, and vector store wrappers:
+- `PyPDFLoader`, `OnlinePDFLoader` — load source documents from file or URL
+- `RecursiveCharacterTextSplitter` — chunk text into embedding-sized pieces
+- `OllamaEmbeddings` — generate vectors locally via Ollama
+- `Qdrant` vectorstore wrapper — upsert and similarity-search against Qdrant collections
+- `ChatPromptTemplate` — structure system + user prompts before LLM calls
+- `Document` — the universal data model that flows through the entire pipeline
+
+> LangChain provides the **building blocks**: load → chunk → embed → store → prompt.
+
+**LangGraph — the agentic orchestration layer**
+
+Used exclusively in `service/pipeline_service.py`:
+- `StateGraph`, `END` — defines a stateful directed graph where each node is a pipeline step
+- Nodes: `classify_intent`, `retrieve_context`, `generate_answer`
+- Edges control flow; conditional edges route to the right retrieval path (bylaw / fee / general)
+- Typed `ChatState` carries question, intent, retrieved context, and answer across nodes
+
+> LangGraph manages **how the chatbot thinks**: it sequences which steps run, in what order, with what branching — maintaining state across the full turn.
+
+**Why both:**
+- You could use LangChain alone with a simple chain (`prompt | llm | parser`) — but that's a linear pipe with no branching, no state, no conditional routing
+- LangGraph wraps the LangChain components inside a controllable graph — you stay in charge of the flow while still using LangChain's ecosystem of loaders, splitters, and embeddings
+
+**Interview line:** *"LangChain gave us the ingestion and retrieval primitives. LangGraph gave us the orchestration layer — explicit state, conditional routing, and a graph you can inspect and test. They work at different levels of the stack."*
+
+---
+
 ## Why Hybrid Retrieval (BM25 + Vector, not pure vector)
 
 **Chose hybrid because:**
@@ -84,16 +118,18 @@ Use these when asked "why did you choose X?" or "walk me through your architectu
 
 ---
 
-## Why Three Separate Qdrant Collections (not one)
+## Why Four Separate Qdrant Collections (not one)
 
 **Chose separate collections because:**
-- PDFs (bylaws), websites (city pages), and Excel (fee schedules) have different schemas and retrieval characteristics
+- PDFs (bylaws), websites (city pages), Excel (fee schedules), and text notes have different schemas and retrieval characteristics
 - Separate collections let you control how many results come from each source
 - Easier to re-ingest one source type without touching others
 - Metadata filtering is cleaner — no need to filter by `doc_type` within a shared collection
 - In `get_relevant_chunks`: fetch candidates from each, then re-rank across all — best of both worlds
 
-**Interview line:** *"Three collections gave us source-type control at ingest time and cross-collection re-ranking at query time."*
+**Collections:** `pdf_index`, `website_index`, `excel_index`, `text_index`
+
+**Interview line:** *"Four collections gave us source-type control at ingest time and cross-collection re-ranking at query time. Re-ingesting bylaws doesn't touch website or text data."*
 
 ---
 
@@ -193,7 +229,6 @@ RAG systems are only as trustworthy as their sources. This is what the code does
 | Low-confidence chunks | Score threshold filters them before they reach the LLM context |
 
 ### What the code does NOT handle
-
 | Gap | Impact |
 |---|---|
 | Wrong content in a source document | Ingested as truth — no validation at ingest time |

@@ -1,6 +1,6 @@
 import glob
 from qdrant_client import QdrantClient
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant as QdrantVS
 from langchain_ollama import OllamaEmbeddings
 from service.pdf_loader import LocalPdfLoader
@@ -11,7 +11,7 @@ from rank_bm25 import BM25Okapi
 from config import (
     PDF_DIR, WEBSITES, EXCELS,
     QDRANT_HOST, QDRANT_PORT,
-    PDF_COLLECTION, WEBSITE_COLLECTION, EXCEL_COLLECTION,
+    PDF_COLLECTION, WEBSITE_COLLECTION, EXCEL_COLLECTION, TEXT_COLLECTION,
     EMBED_MODEL,
     RETRIEVAL_SCORE_THRESHOLD, HYBRID_ALPHA, HYBRID_FETCH_MULTIPLIER,
 )
@@ -93,7 +93,7 @@ class RetrieverService:
                 with open(fp, "r", encoding="utf-8") as f:
                     txt = f.read()
                 # delete old by 'source' (file path) before inserting
-                self._delete_by_filter(WEBSITE_COLLECTION, "source", fp)
+                self._delete_by_filter(TEXT_COLLECTION, "source", fp)
                 docs.append(TextLoader(text=txt, source=fp).load())
             except Exception as e:
                 self.logger.error(f"Failed reading {fp}: {e}")
@@ -107,9 +107,9 @@ class RetrieverService:
             chunks,
             embedding=self.embeddings,
             location=self.location,
-            collection_name=WEBSITE_COLLECTION
+            collection_name=TEXT_COLLECTION
         )
-        self.logger.info(f"Ingested {len(chunks)} text chunks → {WEBSITE_COLLECTION}")
+        self.logger.info(f"Ingested {len(chunks)} text chunks → {TEXT_COLLECTION}")
 
     def ingest_excel_files(self, excel_glob: str = "data/excel/*.xlsx"):
         from service.excel_loader import ExcelLoader
@@ -170,17 +170,20 @@ class RetrieverService:
             embedding_function=self.embeddings.embed_query,
             collection_name=EXCEL_COLLECTION
         )
+        text_db = QdrantVS(
+            client=self.client,
+            embedding_function=self.embeddings.embed_query,
+            collection_name=TEXT_COLLECTION
+        )
 
         # Fetch more candidates than needed so BM25 has a meaningful pool to score
-        a = max(1, k // 3) * HYBRID_FETCH_MULTIPLIER
-        b = max(1, k // 3) * HYBRID_FETCH_MULTIPLIER
-        c = max(1, k - (k // 3) * 2) * HYBRID_FETCH_MULTIPLIER
+        per = max(1, k // 4) * HYBRID_FETCH_MULTIPLIER
+        pdf_hits = pdf_db.similarity_search_with_score(query, k=per)
+        website_hits = website_db.similarity_search_with_score(query, k=per)
+        excel_hits = excel_db.similarity_search_with_score(query, k=per)
+        text_hits = text_db.similarity_search_with_score(query, k=per)
 
-        pdf_hits = pdf_db.similarity_search_with_score(query, k=a)
-        website_hits = website_db.similarity_search_with_score(query, k=b)
-        excel_hits = excel_db.similarity_search_with_score(query, k=c)
-
-        all_candidates = pdf_hits + website_hits + excel_hits  # List[Tuple[Document, float]]
+        all_candidates = pdf_hits + website_hits + excel_hits + text_hits  # List[Tuple[Document, float]]
 
         # --- Score threshold filtering (distance: lower = more relevant) ---
         filtered = [(doc, score) for doc, score in all_candidates if score <= RETRIEVAL_SCORE_THRESHOLD]
@@ -213,8 +216,8 @@ class RetrieverService:
 
         self.logger.info(
             f"Hybrid retrieval: {len(pdf_hits)} PDF + {len(website_hits)} website + "
-            f"{len(excel_hits)} excel candidates → {len(filtered)} passed threshold → "
-            f"returning top {len(results)}"
+            f"{len(excel_hits)} excel + {len(text_hits)} text candidates → "
+            f"{len(filtered)} passed threshold → returning top {len(results)}"
         )
 
         return results
